@@ -1,7 +1,22 @@
-use the url ```<domain-name>/user/<username>/<score>``` to post username and score
+### How to use the API
+* use the url ```<domain-name>/user/<username>/<score>``` to post username and score
 
-send get request to ```<domain-name>``` to get Leader Board
+* send get request to ```<domain-name>``` to get Leader Board
 
-**Bug to be fixed**
+### Test if API working properly on local server
+``` bash
+pip install -r requirements.txt
+python app.py
+```
+In a separate terminal
+```bash
+$ curl -X POST http://127.0.0.1:5000/user/test4/12
+{
+  "action": "success"
+}
 
-Leader Board is not sorting correctly as per score and the order currently is first in first out
+$ curl http://127.0.0.1:5000/
+{
+  "test4": 12
+}
+```
