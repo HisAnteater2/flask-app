@@ -1,6 +1,7 @@
 import operator
 import pickle
 from collections import OrderedDict
+from copy import deepcopy
 
 from flask import Flask, jsonify, request
 
@@ -19,21 +20,26 @@ app.config['JSON_SORT_KEYS'] = False
 @app.route('/', methods = ['GET', 'POST'])
 def home():
 	global Users
+	UserRanked = deepcopy(Users)
+	for user in UserRanked:
+		del UserRanked[user]['password']
 	if(request.method == 'GET'):
-		return jsonify(Users)
+		return jsonify(UserRanked)
 
-@app.route('/user/<username>/<score>', methods = ['GET', 'POST'])
-def update_user(username, score):
+@app.route('/user/<username>/<password>/<score>', methods = ['GET', 'POST'])
+def update_user(username, password, score):
 	global Users
 	print(Users)
 	print(type(Users))
 	if (type(username)!=str):
 		return jsonify({'action': 'failure'}), 400
 	if username in Users:
-		if Users[username] >= int(score):
+		if Users[username]['password'] != password:
+			return jsonify({'action': 'failure'}), 400
+		if Users[username]['score'] >= int(score):
 			return jsonify({'action': 'success'}), 200
-	Users.update({username: int(score)})
-	Users = OrderedDict(reversed((sorted(Users.items(), key=lambda item: item[1]))))
+	Users.update({username: {'score': int(score), 'password': password}})
+	Users = OrderedDict(reversed((sorted(Users.items(), key=lambda item: item[1]['score']))))
 	# Saving the objects:
 	with open('data.pkl', 'wb') as f:  # Python 3: open(..., 'wb')
 		pickle.dump(Users, f)
