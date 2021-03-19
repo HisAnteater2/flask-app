@@ -10,7 +10,7 @@ python app.py
 ```
 In a separate terminal
 ```bash
-$ curl -X POST http://127.0.0.1:5000/user/test4/1
+$ curl -X POST http://127.0.0.1:5000/user/test4/12
 {
   "action": "success"
 }
