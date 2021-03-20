@@ -25,11 +25,10 @@ $ curl -X POST http://127.0.0.1:5000/user/test4/dummy_passwd/1
 {
   "action": "success"
 }
-# When data for Leader Board is to be fetched
+# The username of highest scorer and the score is fetched
 $ curl http://127.0.0.1:5000/
 {
-  "test4": {
-    "score": 1
-  }
+  "user": "test4",
+  "score": 1
 }
 ```

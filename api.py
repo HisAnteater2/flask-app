@@ -1,7 +1,6 @@
 import operator
 import pickle
 from collections import OrderedDict
-from copy import deepcopy
 
 from flask import Flask, jsonify, request
 
@@ -10,7 +9,7 @@ try:
     # Getting back the objects:
 	with open('data.pkl', 'rb') as f:  # Python 3: open(..., 'rb')
 		Users = pickle.load(f)
-except EOFError:
+except (EOFError, FileNotFoundError):
 	Users = {}
 
 # creating a Flask app
@@ -20,17 +19,21 @@ app.config['JSON_SORT_KEYS'] = False
 @app.route('/', methods = ['GET', 'POST'])
 def home():
 	global Users
-	UserRanked = deepcopy(Users)
-	for user in UserRanked:
-		del UserRanked[user]['password']
+	if not Users:
+		return jsonify({})
+	highest_scorer_name = list(Users.keys())[0]
+	highest_scorer = Users[highest_scorer_name]
+	# remove password
+	highest_scorer = {
+		'user': highest_scorer_name,
+		'score': highest_scorer['score']
+	}
 	if(request.method == 'GET'):
-		return jsonify(UserRanked)
+		return jsonify(highest_scorer)
 
 @app.route('/user/<username>/<password>/<score>', methods = ['GET', 'POST'])
 def update_user(username, password, score):
 	global Users
-	print(Users)
-	print(type(Users))
 	if (type(username)!=str):
 		return jsonify({'action': 'failure'}), 400
 	if username in Users:
